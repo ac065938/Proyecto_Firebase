@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "App",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "slug": "app",
     "version": "1.0.0",
     "orientation": "portrait",
