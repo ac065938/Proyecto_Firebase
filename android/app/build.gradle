@@ -169,8 +169,13 @@ android {
 dependencies {
 
     implementation 'com.google.android.gms:play-services-auth:19.2.0'
+    implementation project(':react-native-maps')
+    implementation 'com.google.android.gms:play-services-maps:18.0.2' // O la última versión
+    implementation 'com.google.android.gms:play-services-location:21.0.1' // O la última versión
     implementation(platform("com.google.firebase:firebase-bom:33.2.0"))
     implementation("com.google.firebase:firebase-analytics")
+    implementation project(':@rnmapbox_maps')
+
     
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")

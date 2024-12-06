@@ -1,100 +1,98 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, Dimensions, Image, Modal, TouchableOpacity } from 'react-native';
-import { launchImageLibrary } from 'react-native-image-picker'; // Importar la librería
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Dimensions,
+  TouchableOpacity,
+  Image,
+  Modal,
+  TextInput,
+} from 'react-native';
 
 const Pagina1 = ({ navigation }) => {
   const { width: screenWidth } = Dimensions.get('window');
-  
-  const [numColumns, setNumColumns] = useState(3); // Estado para el número de columnas
-  const [profilePicture, setProfilePicture] = useState('https://scontent.ftpq3-1.fna.fbcdn.net/v/t39.30808-6/448701383_2269341096739261_5574070838425043319_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=833d8c&_nc_ohc=B66fjTSgoagQ7kNvgEJtWGk&_nc_zt=23&_nc_ht=scontent.ftpq3-1.fna&_nc_gid=A7SK-WEyFaPIsH-erhNdGjf&oh=00_AYCmhpUk7DPZ6MOSZuF-tZ5ddkxZxVNytsJ6fkfFl2aNfw&oe=674170FB'); // Foto de perfil
-  const [coverPhoto, setCoverPhoto] = useState('https://scontent.ftpq3-1.fna.fbcdn.net/v/t39.30808-6/448757223_2271311786542192_3105681844618444598_n.jpg?stp=cp6_dst-jpg&_nc_cat=104&ccb=1-7&_nc_sid=9eae26&_nc_ohc=1wYTYUYSGRIQ7kNvgGzTHXY&_nc_zt=23&_nc_ht=scontent.ftpq3-1.fna&_nc_gid=AcPgCoQykr-UiFtBmCyfEPF&oh=00_AYDFAE7cEbOeJOoSm924x4rMv3HFSMqlp5ou7mgGAyqwXQ&oe=67415279'); // Foto de portada
-  const [selectedImage, setSelectedImage] = useState(null); // Para almacenar la imagen seleccionada para ampliar
-  const [modalVisible, setModalVisible] = useState(false); // Controlar la visibilidad del modal
-
-  // Datos de ejemplo para el perfil
-  const userProfile = {
-    name: 'Andrés Chávez Pérez',
-    bio: 'Desarrollador de software | Amante de la tecnología',
-  };
-
-  // Datos de ejemplo para las imágenes (mosaicos)
-  const images = Array.from({ length: 9 }, (_, index) => ({
-    id: index.toString(),
-    uri: `https://scontent.ftpq3-1.fna.fbcdn.net/v/t39.30808-6/459225136_2332846850388685_8684664685935203353_n.jpg?stp=cp6_dst-jpg&_nc_cat=110&ccb=1-7&_nc_sid=cc71e4&_nc_ohc=bLslnm9yHF4Q7kNvgFZijnt&_nc_zt=23&_nc_ht=scontent.ftpq3-1.fna&_nc_gid=ADhXgxi__zgKV2pzlztfrxf&oh=00_AYDSGoILRtOEorW1Fsmqhod_edOuyuIAEEm-QBp1g8eddw&oe=6741BEB3${index + 1}`, // URL de las imágenes
-  }));
+  const [modalVisible, setModalVisible] = useState(false);
+  const [name, setName] = useState('Andrés Chávez Pérez');
+  const [email, setEmail] = useState('ac192582@gmail.com');
 
   const handleLogout = () => {
     navigation.navigate('VisLogin'); // Navega a la pantalla de inicio de sesión
   };
 
-  // Función para manejar la selección de foto
-  const handleAddPhoto = () => {
-    launchImageLibrary({ mediaType: 'photo', quality: 0.5 }, (response) => {
-      if (response.didCancel) {
-        console.log('El usuario canceló la selección de imagen');
-      } else if (response.errorCode) {
-        console.log('Error al seleccionar la imagen:', response.errorMessage);
-      } else {
-        setProfilePicture(response.assets[0].uri); // Actualizar la foto de perfil
-      }
-    });
-  };
-
-  // Llamar a handleAddPhoto al cargar el componente
-  useEffect(() => {
-    handleAddPhoto();
-  }, []);
-
-  // Función para abrir el modal con la imagen seleccionada
-  const handleImageClick = (uri) => {
-    setSelectedImage(uri); // Establecer la imagen seleccionada
-    setModalVisible(true); // Mostrar el modal
-  };
-
-  // Función para cerrar el modal
-  const closeModal = () => {
-    setModalVisible(false); // Cerrar el modal
+  const handleSave = () => {
+    setModalVisible(false); // Cierra el modal
   };
 
   return (
     <View style={styles.container}>
-      {/* Foto de portada */}
-      <View style={styles.coverPhotoContainer}>
-        <Image source={{ uri: coverPhoto }} style={styles.coverPhoto} />
-        
-        {/* Foto de perfil sobre la foto de portada */}
-        <Image source={{ uri: profilePicture }} style={styles.profilePicture} />
+      <View style={[styles.whiteBackground, { height: 200 }]} />
+
+      <View style={styles.rectangleContainer}>
+        <View style={[styles.rectangle, { width: screenWidth - 40, height: 100 }]}>
+          <View style={styles.innerBox}>
+            <Text style={styles.innerBoxText}>Perfil del Usuario</Text>
+          </View>
+        </View>
       </View>
 
+      {/* Información del Usuario */}
       <View style={styles.profileContainer}>
-        <Text style={styles.profileName}>{userProfile.name}</Text>
-        <Text style={styles.profileBio}>{userProfile.bio}</Text>
+        <Image
+          source={{
+            uri: 'https://scontent.ftpq3-1.fna.fbcdn.net/v/t39.30808-6/462689432_2362714774068559_8296105676411748992_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=OJ9mCxc7NycQ7kNvgHaaFlS&_nc_zt=23&_nc_ht=scontent.ftpq3-1.fna&_nc_gid=A-OUra9qOZfwSZFIJyGxz5L&oh=00_AYDmb81L6CV4coaiMkf9b8QhlUn6zm9KSTpPL3p0MiwuJg&oe=67515330',
+          }}
+          style={styles.profileImage}
+        />
+        <Text style={styles.profileName}>{name}</Text>
+        <Text style={styles.profileEmail}>{email}</Text>
       </View>
 
-      <FlatList
-        key={numColumns} // Cambia la clave para forzar la re-renderización cuando numColumns cambie
-        data={images}
-        keyExtractor={(item) => item.id}
-        numColumns={numColumns}
-        renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => handleImageClick(item.uri)} style={styles.imageContainer}>
-            <Image source={{ uri: item.uri }} style={styles.image} />
-          </TouchableOpacity>
-        )}
-        contentContainerStyle={styles.flatListContent}
-      />
+      {/* Botones de acción */}
+      <View style={styles.actionButtons}>
+        <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>
+          <Text style={styles.buttonText}>Editar Perfil</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={handleLogout}>
+          <Text style={styles.buttonText}>Cerrar Sesión</Text>
+        </TouchableOpacity>
+      </View>
 
-      {/* Modal para mostrar la imagen expandida */}
+      {/* Modal para editar el perfil */}
       <Modal
         visible={modalVisible}
+        animationType="slide"
         transparent={true}
-        animationType="fade"
-        onRequestClose={closeModal}
+        onRequestClose={() => setModalVisible(false)}
       >
-        <View style={styles.modalContainer}>
-          <TouchableOpacity style={styles.modalBackground} onPress={closeModal}>
-            <Image source={{ uri: selectedImage }} style={styles.modalImage} />
-          </TouchableOpacity>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Editar Perfil</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Nombre"
+              value={name}
+              onChangeText={setName}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Correo"
+              value={email}
+              onChangeText={setEmail}
+              keyboardType="email-address"
+            />
+            <View style={styles.modalButtons}>
+              <TouchableOpacity style={styles.modalButton} onPress={handleSave}>
+                <Text style={styles.modalButtonText}>Guardar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.modalButton, { backgroundColor: '#bc6c25' }]}
+                onPress={() => setModalVisible(false)}
+              >
+                <Text style={styles.modalButtonText}>Cancelar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
       </Modal>
     </View>
@@ -104,82 +102,123 @@ const Pagina1 = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#D4D0C8',
+    backgroundColor: '#dda15e',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  coverPhotoContainer: {
+  whiteBackground: {
+    position: 'absolute',
+    top: 20,
+    left: 5,
     width: '100%',
-    height: 200, // Altura de la foto de portada
-    position: 'relative', // Posicionar la foto de perfil encima
+    backgroundColor: '#FFFFFF',
+    zIndex: -1,
   },
-  coverPhoto: {
+  rectangleContainer: {
     width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    position: 'absolute',
+    top: 7,
+    zIndex: 1,
   },
-  profilePicture: {
-    width: 150, // Subir el tamaño de la foto de perfil
-    height: 150, // Ajusta el tamaño si lo deseas
-    borderRadius: 75, // Hace la imagen redonda
-    position: 'absolute', // Posicionar encima de la foto de portada
-    bottom: -75, // Mueve la foto de perfil hacia abajo, para que quede parcialmente encima de la portada
-    left: '50%', // Centra la foto de perfil
-    marginLeft: -75, // Ajuste para centrar completamente la imagen
-    borderWidth: 4, // Opcional, para darle un borde
-    borderColor: '#fff', // Borde blanco
+  rectangle: {
+    backgroundColor: '#bc6c25',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  innerBox: {
+    backgroundColor: '#dda15e',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 5,
+    width: 150,
+    height: 70,
+  },
+  innerBoxText: {
+    color: '#FFFFFF',
+    fontSize: 14,
   },
   profileContainer: {
     alignItems: 'center',
-    padding: 20,
+    marginTop: 120,
+  },
+  profileImage: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    borderWidth: 2,
+    borderColor: '#1d7874',
+    marginBottom: 20,
   },
   profileName: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
-    marginTop: 60,
+    color: '#fefae0',
   },
-  profileBio: {
-    fontSize: 14,
-    textAlign: 'center',
-    marginTop: 10, 
+  profileEmail: {
+    fontSize: 16,
+    color: '#fefae0',
   },
-  
-  flatListContent: {
+  actionButtons: {
+    marginTop: 20,
+    width: '80%',
+    alignItems: 'center',
+  },
+  button: {
+    backgroundColor: '#bc6c25',
     padding: 10,
+    borderRadius: 8,
+    marginBottom: 10,
+    alignItems: 'center',
   },
-  imageContainer: {
+  buttonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  modalOverlay: {
     flex: 1,
-    margin: 5,
-    height: 100, // Altura de cada imagen
-    borderRadius: 10,
-    overflow: 'hidden',
-    backgroundColor: '#FFFFFF',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 1.41,
-    elevation: 2,
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-    resizeMode: 'cover',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   modalContainer: {
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    borderRadius: 10,
+    width: '80%',
+    alignItems: 'center',
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  input: {
+    width: '100%',
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
+    marginBottom: 15,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  modalButton: {
     flex: 1,
-    justifyContent: 'center',
+    padding: 10,
+    borderRadius: 5,
+    backgroundColor: '#1d7874',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)', // Fondo oscuro para el modal
+    marginHorizontal: 5,
   },
-  modalBackground: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalImage: {
-    width: 300, // Tamaño de la imagen expandida
-    height: 300,
-    resizeMode: 'contain',
+  modalButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
   },
 });
 

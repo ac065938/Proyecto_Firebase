@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, FlatList, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker'; // Importa DateTimePicker
 import { db } from '../Control/Firebase'; // Tu archivo de configuración de Firebase
 
 const VisClientes = () => {
@@ -7,9 +8,13 @@ const VisClientes = () => {
   const [nombre, setNombre] = useState(''); // Nombre del cliente
   const [telefono, setTelefono] = useState(''); // Teléfono del cliente
   const [direccion, setDireccion] = useState(''); // Dirección del cliente
-  const [vehiculo, setVehiculo] = useState(''); // Dirección del cliente
+  const [vehiculo, setVehiculo] = useState(''); // Vehículo del cliente
+  const [correo, setCorreo] = useState(''); // Correo electrónico del cliente
+  const [fechaNacimiento, setFechaNacimiento] = useState(new Date()); // Fecha de nacimiento (por defecto, fecha actual)
+  const [modeloVehiculo, setModeloVehiculo] = useState(''); // Modelo del vehículo
 
   const [selectedCliente, setSelectedCliente] = useState(null); // Cliente seleccionado para editar
+  const [showDatePicker, setShowDatePicker] = useState(false); // Mostrar u ocultar el selector de fecha
 
   // Leer clientes desde Firebase
   useEffect(() => {
@@ -25,12 +30,14 @@ const VisClientes = () => {
 
   // Crear o actualizar cliente
   const handleSaveCliente = async () => {
-    if (!nombre || !telefono || !direccion || !vehiculo) {
+    if (!nombre || !telefono || !direccion || !vehiculo || !correo || !fechaNacimiento || !modeloVehiculo) {
       alert('Todos los campos son obligatorios');
       return;
     }
 
     try {
+      // Verificar si fechaNacimiento es un objeto Date
+      const fechaISO = fechaNacimiento instanceof Date ? fechaNacimiento.toISOString().split('T')[0] : '';
       if (selectedCliente) {
         // Actualizar cliente
         await db.collection('clientes').doc(selectedCliente.id).update({
@@ -38,6 +45,9 @@ const VisClientes = () => {
           telefono,
           direccion,
           vehiculo,
+          correo,
+          fechaNacimiento: fechaISO, // Formatear fecha
+          modeloVehiculo,
         });
         alert('Cliente actualizado');
       } else {
@@ -47,6 +57,9 @@ const VisClientes = () => {
           telefono,
           direccion,
           vehiculo,
+          correo,
+          fechaNacimiento: fechaISO, // Formatear fecha
+          modeloVehiculo,
         });
         alert('Cliente agregado');
       }
@@ -56,6 +69,9 @@ const VisClientes = () => {
       setTelefono('');
       setDireccion('');
       setVehiculo('');
+      setCorreo('');
+      setFechaNacimiento(new Date());
+      setModeloVehiculo('');
 
       setSelectedCliente(null);
     } catch (error) {
@@ -79,7 +95,23 @@ const VisClientes = () => {
     setTelefono(cliente.telefono);
     setDireccion(cliente.direccion);
     setVehiculo(cliente.vehiculo);
+    setCorreo(cliente.correo);
+    setFechaNacimiento(new Date(cliente.fechaNacimiento)); // Convertir a Date
+    setModeloVehiculo(cliente.modeloVehiculo);
     setSelectedCliente(cliente);
+  };
+
+  // Mostrar el selector de fecha
+  const showDatePickerHandler = () => {
+    setShowDatePicker(true);
+  };
+
+  // Manejar el cambio de fecha
+  const onDateChange = (event, selectedDate) => {
+    setShowDatePicker(false); // Ocultar el selector de fecha
+    if (selectedDate) {
+      setFechaNacimiento(selectedDate); // Actualizar la fecha seleccionada
+    }
   };
 
   return (
@@ -108,9 +140,35 @@ const VisClientes = () => {
       />
       <TextInput
         style={styles.input}
-        placeholder="Vehiculo"
+        placeholder="Vehículo"
         value={vehiculo}
         onChangeText={setVehiculo}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Correo Electrónico"
+        value={correo}
+        onChangeText={setCorreo}
+        keyboardType="email-address"
+      />
+      
+      <TouchableOpacity onPress={showDatePickerHandler} style={styles.datePickerButton}>
+        <Text>Fecha de Nacimiento: {fechaNacimiento.toISOString().split('T')[0]}</Text>
+      </TouchableOpacity>
+      {showDatePicker && (
+        <DateTimePicker
+          value={fechaNacimiento}
+          mode="date"
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          onChange={onDateChange}
+        />
+      )}
+
+      <TextInput
+        style={styles.input}
+        placeholder="Modelo del Vehículo"
+        value={modeloVehiculo}
+        onChangeText={setModeloVehiculo}
       />
       <Button
         title={selectedCliente ? 'Actualizar Cliente' : 'Agregar Cliente'}
@@ -127,6 +185,9 @@ const VisClientes = () => {
             <Text>Teléfono: {item.telefono}</Text>
             <Text>Dirección: {item.direccion}</Text>
             <Text>Vehículo: {item.vehiculo}</Text>
+            <Text>Correo: {item.correo}</Text>
+            <Text>Fecha de Nacimiento: {item.fechaNacimiento}</Text>
+            <Text>Modelo del Vehículo: {item.modeloVehiculo}</Text>
 
             <View style={styles.actions}>
               <TouchableOpacity onPress={() => handleEditCliente(item)}>
@@ -181,6 +242,9 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     color: '#FF0000',
+  },
+  datePickerButton: {
+    marginBottom: 10,
   },
 });
 

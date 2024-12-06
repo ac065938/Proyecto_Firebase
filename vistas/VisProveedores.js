@@ -1,13 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
-import { db } from '../Control/Firebase'; // Importa tu configuración de Firebase
+import DropDownPicker from 'react-native-dropdown-picker'; // Importar DropDownPicker
+import { db } from '../Control/Firebase';
 
 const VisProveedores = () => {
   const [proveedores, setProveedores] = useState([]);
   const [nombre, setNombre] = useState('');
   const [telefono, setTelefono] = useState('');
   const [direccion, setDireccion] = useState('');
+  const [email, setEmail] = useState('');
+  const [rfc, setRFC] = useState('');
+  const [tipoProveedor, setTipoProveedor] = useState('local');
+  const [activo, setActivo] = useState('activo'); // Cambio: 'activo' o 'inactivo'
   const [selectedProveedor, setSelectedProveedor] = useState(null);
+
+  const [tipoProveedorOpen, setTipoProveedorOpen] = useState(false); // Estado para el dropdown
+  const [activoOpen, setActivoOpen] = useState(false); // Estado para el dropdown de "Activo/Inactivo"
 
   // Leer proveedores desde Firebase
   useEffect(() => {
@@ -23,33 +31,39 @@ const VisProveedores = () => {
 
   // Crear o actualizar proveedor
   const handleSaveProveedor = async () => {
-    if (!nombre || !telefono || !direccion) {
+    if (!nombre || !telefono || !direccion || !email || !rfc) {
       alert('Todos los campos son obligatorios');
       return;
     }
 
     try {
+      const data = {
+        nombre,
+        telefono,
+        direccion,
+        email,
+        rfc,
+        tipoProveedor,
+        activo,
+      };
+
       if (selectedProveedor) {
         // Actualizar proveedor existente
-        await db.collection('proveedores').doc(selectedProveedor.id).update({
-          nombre,
-          telefono,
-          direccion,
-        });
+        await db.collection('proveedores').doc(selectedProveedor.id).update(data);
         alert('Proveedor actualizado');
       } else {
         // Crear un nuevo proveedor
-        await db.collection('proveedores').add({
-          nombre,
-          telefono,
-          direccion,
-        });
+        await db.collection('proveedores').add(data);
         alert('Proveedor agregado');
       }
       // Resetear campos
       setNombre('');
       setTelefono('');
       setDireccion('');
+      setEmail('');
+      setRFC('');
+      setTipoProveedor('local');
+      setActivo('activo'); // Reset a default value
       setSelectedProveedor(null);
     } catch (error) {
       console.error('Error al guardar proveedor:', error);
@@ -71,6 +85,10 @@ const VisProveedores = () => {
     setNombre(proveedor.nombre);
     setTelefono(proveedor.telefono);
     setDireccion(proveedor.direccion);
+    setEmail(proveedor.email);
+    setRFC(proveedor.rfc);
+    setTipoProveedor(proveedor.tipoProveedor);
+    setActivo(proveedor.activo); // Actualizar el estado con el valor del proveedor
     setSelectedProveedor(proveedor);
   };
 
@@ -98,6 +116,51 @@ const VisProveedores = () => {
         value={direccion}
         onChangeText={setDireccion}
       />
+      <TextInput
+        style={styles.input}
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+        keyboardType="email-address"
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="RFC"
+        value={rfc}
+        onChangeText={setRFC}
+      />
+
+      {/* Dropdown para Tipo de Proveedor */}
+      <Text style={styles.label}>Tipo de Proveedor:</Text>
+      <DropDownPicker
+        open={tipoProveedorOpen}
+        value={tipoProveedor}
+        items={[
+          { label: 'Local', value: 'local' },
+          { label: 'Nacional', value: 'nacional' },
+          { label: 'Internacional', value: 'internacional' },
+        ]}
+        setOpen={setTipoProveedorOpen}
+        setValue={setTipoProveedor}
+        style={styles.dropdown}
+        placeholder="Seleccionar"
+      />
+
+      {/* Dropdown para Proveedor Activo/Inactivo */}
+      <Text style={styles.label}>Estado del Proveedor:</Text>
+      <DropDownPicker
+        open={activoOpen}
+        value={activo}
+        items={[
+          { label: 'Activo', value: 'activo' },
+          { label: 'Inactivo', value: 'inactivo' },
+        ]}
+        setOpen={setActivoOpen}
+        setValue={setActivo}
+        style={styles.dropdown}
+        placeholder="Seleccionar"
+      />
+
       <Button
         title={selectedProveedor ? 'Actualizar Proveedor' : 'Agregar Proveedor'}
         onPress={handleSaveProveedor}
@@ -112,6 +175,10 @@ const VisProveedores = () => {
             <Text>Nombre: {item.nombre}</Text>
             <Text>Teléfono: {item.telefono}</Text>
             <Text>Dirección: {item.direccion}</Text>
+            <Text>Email: {item.email}</Text>
+            <Text>RFC: {item.rfc}</Text>
+            <Text>Tipo: {item.tipoProveedor}</Text>
+            <Text>Estado: {item.activo === 'activo' ? 'Activo' : 'Inactivo'}</Text>
             <View style={styles.actions}>
               <TouchableOpacity onPress={() => handleEditProveedor(item)}>
                 <Text style={styles.editButton}>Editar</Text>
@@ -144,6 +211,17 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 5,
     padding: 10,
+    marginBottom: 10,
+    backgroundColor: '#fff',
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 5,
+  },
+  dropdown: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 5,
     marginBottom: 10,
     backgroundColor: '#fff',
   },

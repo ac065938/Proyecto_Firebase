@@ -14,14 +14,18 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "edu.acp.AndromedaApp"
+      "bundleIdentifier": "edu.acp.AndromedaApp",
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "edu.acp.AndromedaApp"
+      "package": "edu.acp.AndromedaApp",
+      "runtimeVersion": "1.0.0"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -30,6 +34,9 @@
       "eas": {
         "projectId": "e95009a3-ee52-4c20-8c51-4e44954abbf0"
       }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/e95009a3-ee52-4c20-8c51-4e44954abbf0"
     }
   }
 }
